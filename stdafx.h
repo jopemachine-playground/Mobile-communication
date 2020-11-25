@@ -36,11 +36,11 @@
 #define TIMER_STUD_ENTRY		10
 
 // Global Macro
-#define ERROR_INT				0xffff
+#define ERROR_INT				0xffff // -1
 
 // Protocol Macro
-#define S1AP_PDU_INITIAL_MESSAGE			0x00
-#define S1AP_PDU_SUCCESSFUL_OUTCOME			0x20
+#define S1AP_PDU_INITIAL_MESSAGE			0x00 // 0
+#define S1AP_PDU_SUCCESSFUL_OUTCOME			0x20 // 32
 
 #define S1AP_ID_MME_UE_S1AP_ID				0
 #define S1AP_ID_ENB_UE_S1AP_ID				8
@@ -68,10 +68,10 @@
 #define S1AP_MSG_TYPE_ATTACH_COMPLETE1		0xFF
 #define S1AP_MSG_TYPE_ATTACH_COMPLETE2		0x43
 
-#define	 SCTP_FLAGS_E						1
-#define	 SCTP_FLAGS_B						2
-#define	 SCTP_FLAGS_U						4
-#define	 SCTP_FLAGS_I						8
+#define	SCTP_FLAGS_E						1
+#define	SCTP_FLAGS_B						2
+#define	SCTP_FLAGS_U						4
+#define	SCTP_FLAGS_I						8
 
 #define MAX_LAYER_NUMBER		0xff
 #define NI_COUNT_NIC			10
@@ -149,7 +149,7 @@ typedef struct _STUD_ENTRY {
 // Array List
 typedef struct _STUD_NODE{
 	STUD_ENTRY	key;
-}STUD_NODE, *PSTUD_NODE;
+} STUD_NODE, *PSTUD_NODE;
 
 // Protocol struct define
 typedef struct _ITEM_HEADER {

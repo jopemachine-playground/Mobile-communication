@@ -28,21 +28,23 @@ CSCTPLayer::~CSCTPLayer()
 
 void CSCTPLayer::ResetHeader()
 {
-	// begin: 알맞은 값을 채우시오
-	m_sHeader.sctp_srcport = htons(0000);
-	m_sHeader.sctp_dstport = htons(0000); // 목적 포트
-	// end
+	// 학번
+	m_sHeader.sctp_srcport = htons(5085);
+
+	// 연구실 번호
+	m_sHeader.sctp_dstport = htons(5630);
 
 	m_sHeader.sctp_verif_tag[0] = 0x00;
 	m_sHeader.sctp_verif_tag[1] = 0x00;
 	m_sHeader.sctp_verif_tag[2] = 0x00;
 	m_sHeader.sctp_verif_tag[3] = 0x00;
-	memset(m_sHeader.sctp_checksum,'\0',4);
-	memset(m_sHeader.sctp_data,'\0',SCTP_DATA_SIZE);
+
+	memset(m_sHeader.sctp_checksum, '\0', 4);
+	memset(m_sHeader.sctp_data,'\0', SCTP_DATA_SIZE);
 
 	// CHUNK DATA
 	m_sChunk.chunk_type = 0x00; // DATA (0), INIT (1)
-	m_sChunk.chunk_length = 0x00;
+	m_sChunk.chunk_length = SCTP_HEADER_SIZE; // 4 bytes
 	m_sChunk.chunk_flags = 0x03;
 	m_sChunk.chunk_tsn = 0x00000000;
 	m_sChunk.chunk_sid = 0x0000;

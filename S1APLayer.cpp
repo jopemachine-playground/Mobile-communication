@@ -31,18 +31,18 @@ void CS1APLayer::ResetHeader()
 	m_sHeader.s1ap_pdu = 0x00;
 	m_sHeader.s1ap_proc_code = 0x00;
 	m_sHeader.s1ap_crit = 0x00;
-	m_sHeader.s1ap_length = 0x00;
+	m_sHeader.s1ap_length = S1AP_HEADER_SIZE;
 	m_sHeader.s1ap_padding = 0x0000;
 	m_sHeader.s1ap_nitem = 0x00; // the number of items
-	memset(m_sHeader.s1ap_data,'\0',S1AP_DATA_SIZE);
+	memset(m_sHeader.s1ap_data, '\0', S1AP_DATA_SIZE);
 
 	m_sHeader2.s1ap_pdu = 0x00;
 	m_sHeader2.s1ap_proc_code = 0x00;
 	m_sHeader2.s1ap_crit = 0x0000;
-	m_sHeader2.s1ap_length = 0x00;
-	memset(m_sHeader2.s1ap_padding,0x00,2);
+	m_sHeader2.s1ap_length = S1AP_HEADER_SIZE;
+	memset(m_sHeader2.s1ap_padding, 0x00, 2);
 	m_sHeader2.s1ap_nitem = 0x00; // the number of items
-	memset(m_sHeader2.s1ap_data,'\0',S1AP_DATA_SIZE+1);
+	memset(m_sHeader2.s1ap_data, '\0', S1AP_DATA_SIZE + 1);
 }
 
 BOOL CS1APLayer::Send(u_char* ppayload, int nlength)
@@ -51,10 +51,10 @@ BOOL CS1APLayer::Send(u_char* ppayload, int nlength)
 
 	BOOL bSuccess = FALSE ;
 
-	memset(m_sHeader.s1ap_data,'\0',S1AP_DATA_SIZE);
-	memset(m_sHeader2.s1ap_data,'\0',S1AP_DATA_SIZE+1);
+	memset(m_sHeader.s1ap_data, '\0', S1AP_DATA_SIZE);
+	memset(m_sHeader2.s1ap_data, '\0', S1AP_DATA_SIZE+1);
 
-	if(MESSAGE_TYPE == S1AP_MSG_TYPE_ATTACH_ACCEPT){
+	if(MESSAGE_TYPE == S1AP_MSG_TYPE_ATTACH_ACCEPT) {
 		memcpy(m_sHeader2.s1ap_data, ppayload, nlength) ;
 		bSuccess = mp_UnderLayer->Send((u_char*)&m_sHeader2, S1AP_HEADER_SIZE + nlength + 1);
 	}
@@ -130,7 +130,7 @@ u_char CS1APLayer::SearchItems(u_char proc, u_char* ppayload)
 		}
 		else if( id == S1AP_ID_E_RAB_TOBE_SETUP_LIST_CTXT_SUREQ)
 		{
-			ch = ppayload[i+33]; // NAS EPS MME type
+ 			ch = ppayload[i + 33]; // NAS EPS MME type
 			return ch;
 		}
 		else

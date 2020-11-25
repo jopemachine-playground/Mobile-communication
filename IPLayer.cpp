@@ -28,22 +28,33 @@ CIPLayer::~CIPLayer()
 
 void CIPLayer::ResetHeader()
 {
-	// begin: 알맞은 값을 채우시오
-	m_sHeader.ip_verlen = 0x00;
+	// Version + length
+	m_sHeader.ip_verlen = 0x45;
 
+	// Type of service
 	m_sHeader.ip_tos = 0x00;
-	m_sHeader.ip_len = 0x0000;
+
+	// Total length, 20 bytes = 0x14
+	m_sHeader.ip_len = 0x0014;
+
+	// Datagram Identification
 	m_sHeader.ip_id = 0x0000;
+
+	// Flags + offset
 	m_sHeader.ip_fragoff = 0x0000;
+
+	// Time to live
 	m_sHeader.ip_ttl = 0x80;
 
-	m_sHeader.ip_proto = 0x00;
-
+	// Protocol
+	m_sHeader.ip_proto = IP_PROTO_SCTP;
+	
+	// Checksum
 	m_sHeader.ip_cksum = 0x0000;
+
 	memset(m_sHeader.ip_src.addrs_i, 0, 4);
 	memset(m_sHeader.ip_dst.addrs_i, 0, 4);
 	memset(m_sHeader.ip_data, 0, IP_DATA_SIZE);
-	// end
 }
 
 void CIPLayer::SetSrcIPAddress(u_char* src_ip)
@@ -79,15 +90,15 @@ BOOL CIPLayer::Receive(u_char* ppayload)
 	BOOL bSuccess = FALSE ;
 
 #if 1
-	if(memcmp((char *)pFrame->ip_dst.addrs_i,(char *)m_sHeader.ip_src.addrs_i,4) == 0 &&
-		memcmp((char *)pFrame->ip_src.addrs_i,(char *)m_sHeader.ip_src.addrs_i,4) != 0 )
+	if(memcmp((char *) pFrame->ip_dst.addrs_i, (char *)m_sHeader.ip_src.addrs_i, 4) == 0 &&
+		memcmp((char *) pFrame->ip_src.addrs_i, (char *)m_sHeader.ip_src.addrs_i, 4) != 0 )
 	{
 #endif
 		// begin: 알맞은 값을 채우시오
 		// * IP의 프로토콜 타입 필터
 		// 1. 프로토콜 타입이 SCTP인 패킷만 걸러낸다.
 		// 2. 걸러진 SCTP타입 패킷을 decapsulation하여, 상위 레이어로 data를 올린다.
-		if(pFrame->ip_proto == 0x00)
+		if(pFrame->ip_proto == IP_PROTO_SCTP)
 			bSuccess = mp_aUpperLayer[0]->Receive((u_char*)pFrame->ip_data);
 		// end
 #if 1
