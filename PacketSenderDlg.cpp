@@ -57,9 +57,7 @@ CPacketSenderDlg::CPacketSenderDlg(CWnd* pParent /*=NULL*/)
 	m_LayerMgr.AddLayer( new CSCTPLayer( "SCTP" ) );
 	m_LayerMgr.AddLayer( new CS1APLayer( "S1AP" ) );
 
-	// begin: 알맞은 값을 채우시오
-	m_LayerMgr.ConnectLayers("AppDlg");
-	// end
+	m_LayerMgr.ConnectLayers("NI ( *Link ( *IP ( *S1AP ( *AppDlg ) ) ) )");
 
 	m_IP = (CIPLayer *)m_LayerMgr.GetLayer("IP");
 	m_Link = (CLinkLayer *)m_LayerMgr.GetLayer("Link");
@@ -270,7 +268,8 @@ HCURSOR CPacketSenderDlg::OnQueryDragIcon()
 BOOL CPacketSenderDlg::Send(u_char* ppayload, int length)
 {
 	BOOL bSuccess = FALSE;
-	bSuccess = mp_UnderLayer->Send((u_char*)ppayload,length);
+	assert(mp_UnderLayer != nullptr);
+	bSuccess = mp_UnderLayer->Send((u_char*) ppayload, length);
 
 	return bSuccess;
 }
@@ -337,32 +336,32 @@ u_char* CPacketSenderDlg::MacAddrToHexInt(CString ether)
 	CString cstr;
 	u_char *arp_ether = (u_char *)malloc(sizeof(u_char)*6);
 
-	for(int i=0;i<6;i++){
-		AfxExtractSubString(cstr,ether,i,':');
+	for(int i = 0; i < 6; i++){
+		AfxExtractSubString(cstr, ether, i, ':');
 		// strtoul -> 문자열을 원하는 진수로 변환 시켜준다.
-		arp_ether[i] = (u_char)strtoul(cstr.GetString(),NULL,16);
+		arp_ether[i] = (u_char)strtoul(cstr.GetString(), NULL, 16);
 	}
 	arp_ether[6] = '\0';
 
 	return arp_ether;
 }
 
+// Send 버튼 이벤트 처리
 void CPacketSenderDlg::OnBnClickedBtnSend()
 {
 	// 메시지에 따라서 Item을 채워서 내려보내면 됨.
 	u_char ppayload[S1AP_DATA_SIZE];
-	int length=0;
-	char items=0;
+	int length = 0;
+	char items = 0;
 
 	length = 90;
-	memset(ppayload,'\0',S1AP_DATA_SIZE);
-	memcpy(ppayload,attachReqItems(),length);
+	memset(ppayload, '\0', S1AP_DATA_SIZE);
+	memcpy(ppayload, attachReqItems(), length);
 
 	items = 5;
-
 	m_S1AP->SetTheNumberOfItems(items);
 	m_S1AP->SetMessageType(S1AP_MSG_TYPE_ATTACH_REQUEST);
-	Send(ppayload,length);
+	Send(ppayload, length);
 }
 
 void CPacketSenderDlg::OnBnClickedBtnSetting()
@@ -371,11 +370,11 @@ void CPacketSenderDlg::OnBnClickedBtnSetting()
 	// 168.188.127.166 a8.bc.7f.a6
 	/*
 	u_char dstip[4] = {
-		0xa8,0xbc,0x7f,0xa6 
+		0xa8, 0xbc, 0x7f, 0xa6 
 	};
 	*/
 
-	ctrlIP.GetAddress(dstip[0],dstip[1],dstip[2],dstip[3]);
+	ctrlIP.GetAddress(dstip[0], dstip[1], dstip[2], dstip[3]);
 
 	m_IP->SetDstIPAddress(dstip);
 
@@ -450,12 +449,10 @@ u_char* CPacketSenderDlg::attachReqItems() // (첫번째 과제)
 		0x00,0x08,0x00,0x02,0x00,0x00,
 
 		// Item1 id-NAS-PDU
-		///////////////////////////// Fill in the blank. ////////////////////////////////////////
-		0x00,0x1a,0x00,0x35,0x34,0x17,0x7c,0x2a,0x01,0x33,0x06,0x07,0x00,0x51,0x0b,0xf6
+		0x00,0x1a,0x00,0x35,0x34,0x17,0x7c,0x2a,0x01,0x33,0x06,0x07,0x41,0x51,0x0b,0xf6
 		,0x54,0xf0,0x60,0x80,0x01,0x01,0xdb,0x00,0x15,0x3b,0x02,0xe0,0xe0,0x00,0x14,0x02
 		,0x01,0xd0,0x31,0xd1,0x27,0x0d,0x80,0x00,0x0d,0x00,0x00,0x03,0x00,0x00,0x0c,0x00
 		,0x00,0x01,0x00,0x52,0x54,0xf0,0x60,0x01,0xf4
-		/////////////////////////////////////////////////////////////////////////////////////////
 
 		// Item2 id-TAI
 		,0x00,0x43,0x00,0x06,0x00,0x54,0xf0,0x60,0x01,0xf4

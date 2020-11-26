@@ -52,13 +52,13 @@ BOOL CS1APLayer::Send(u_char* ppayload, int nlength)
 	BOOL bSuccess = FALSE ;
 
 	memset(m_sHeader.s1ap_data, '\0', S1AP_DATA_SIZE);
-	memset(m_sHeader2.s1ap_data, '\0', S1AP_DATA_SIZE+1);
+	memset(m_sHeader2.s1ap_data, '\0', S1AP_DATA_SIZE + 1);
 
 	if(MESSAGE_TYPE == S1AP_MSG_TYPE_ATTACH_ACCEPT) {
 		memcpy(m_sHeader2.s1ap_data, ppayload, nlength) ;
 		bSuccess = mp_UnderLayer->Send((u_char*)&m_sHeader2, S1AP_HEADER_SIZE + nlength + 1);
 	}
-	else{
+	else {
 		memcpy(m_sHeader.s1ap_data, ppayload, nlength) ;
 		bSuccess = mp_UnderLayer->Send((u_char*)&m_sHeader, S1AP_HEADER_SIZE + nlength );
 	}
@@ -106,11 +106,11 @@ u_char CS1APLayer::SearchItems(u_char proc, u_char* ppayload)
 	u_char ch;
 	short id;
 	ITEM_HEADER header;
-	int i=0;
+	int i = 0;
 
 	while(1)
 	{
-		memcpy((u_char*)&header,&ppayload[i],ITEM_HEADER_SIZE);
+		memcpy((u_char*)&header, &ppayload[i], ITEM_HEADER_SIZE);
 
 		id = ntohs(header.id);
 		if( id == S1AP_ID_NAS_PDU)
@@ -136,10 +136,10 @@ u_char CS1APLayer::SearchItems(u_char proc, u_char* ppayload)
 		else
 		{
 			// begin: 알맞은 값을 채우시오
-			i += 1; // 패킷 탐색을 위한 적절한 길이를 작성하시오. (hint: S1AP의 ITEM 포맷을 참고하시오.)
+			i += 8; // 패킷 탐색을 위한 적절한 길이를 작성하시오. (hint: S1AP의 ITEM 포맷을 참고하시오.)
 			// end
 		}
-		if(i>= m_sHeader.s1ap_length)
+		if(i >= m_sHeader.s1ap_length)
 			return 0;
 	}
 	return 0;
@@ -148,7 +148,7 @@ u_char CS1APLayer::SearchItems(u_char proc, u_char* ppayload)
 // 어떤 메시지를 보낼 것인지 지정
 void CS1APLayer::SelectMessage(int nlength)
 {
-	switch(MESSAGE_TYPE)
+	switch (MESSAGE_TYPE)
 	{
 	case S1AP_MSG_TYPE_ATTACH_REQUEST:
 		AttachReqMsg(nlength);
@@ -169,10 +169,8 @@ void CS1APLayer::SelectMessage(int nlength)
 
 void CS1APLayer::AttachReqMsg(int nlength)
 {
-	// begin: 알맞은 값을 채우시오
-	m_sHeader.s1ap_pdu = 0; // a type of PDU
-	m_sHeader.s1ap_proc_code = 0; // procedure code
-	// end
+	m_sHeader.s1ap_pdu = S1AP_PDU_INITIAL_MESSAGE; // a type of PDU
+	m_sHeader.s1ap_proc_code = S1AP_PROC_CODE_INITIAL_UE_MSG; // procedure code
 
 	m_sHeader.s1ap_crit = 0x40;
 	m_sHeader.s1ap_length = nlength + 3;

@@ -28,10 +28,10 @@ CSCTPLayer::~CSCTPLayer()
 
 void CSCTPLayer::ResetHeader()
 {
-	// 학번
+	// 학번, 0x13dd
 	m_sHeader.sctp_srcport = htons(5085);
 
-	// 연구실 번호
+	// 연구실 번호, 0x15FE
 	m_sHeader.sctp_dstport = htons(5630);
 
 	m_sHeader.sctp_verif_tag[0] = 0x00;
@@ -78,10 +78,8 @@ void CSCTPLayer::SetChunkData(int nlength)
 	// CHUNK DATA
 	m_sChunk.chunk_type = 0x00; // DATA (0), INIT (1)
 
-	// begin: 알맞은 값을 채우시오
-	m_sChunk.chunk_length = ntohs(0);
-	m_sChunk.chunk_pid = htonl(0x00000000);
-	// end
+	m_sChunk.chunk_length = ntohs(nlength + _HEADER_SIZE);
+	m_sChunk.chunk_pid = htonl(0x00000012);
 
 	m_sChunk.chunk_sid = htons(0x0001);
 	m_sHeader.sctp_chunk = m_sChunk;
@@ -91,11 +89,12 @@ BOOL CSCTPLayer::Send(u_char* ppayload, int nlength)
 {
 	SetChunkData(nlength);
 	
-	memset(m_sHeader.sctp_data,'\0',SCTP_DATA_SIZE);
-	memcpy(m_sHeader.sctp_data , ppayload , nlength) ;
+	memset(m_sHeader.sctp_data,'\0', SCTP_DATA_SIZE);
+	// nlength는 payload의 길이
+	memcpy(m_sHeader.sctp_data, ppayload , nlength) ;
 
 	int cLength = -1;
-	// Length 조절
+	// Length 조절, chunk_ssn는 stream sequence number
 	switch(htons(m_sChunk.chunk_ssn))
 	{
 	case 2:
@@ -110,11 +109,11 @@ BOOL CSCTPLayer::Send(u_char* ppayload, int nlength)
 	}
 
 	// begin: 알맞은 값을 채우시오
-	int packet_length = 0 + nlength + cLength; /* + [SCTP PACKET TOTAL SIZE] */
+	int packet_length = SCTP_HEADER_SIZE + nlength + cLength; /* + [SCTP PACKET TOTAL SIZE] */
 	// end
 
-	BOOL bSuccess = FALSE ;
-	bSuccess = mp_UnderLayer->Send((u_char*)&m_sHeader,packet_length);
+	BOOL bSuccess = FALSE;
+	bSuccess = mp_UnderLayer->Send((u_char*)&m_sHeader, packet_length);
 
 	return bSuccess;
 }
@@ -124,7 +123,7 @@ BOOL CSCTPLayer::Receive(u_char* ppayload)
 	PSCTPLayer_HEADER pFrame = (PSCTPLayer_HEADER) ppayload ;
 	CHUNK_HEADER pChunk = pFrame->sctp_chunk;
 
-	BOOL bSuccess = FALSE ;
+	BOOL bSuccess = FALSE;
 	
 	bSuccess = mp_aUpperLayer[0]->Receive((u_char*)pFrame->sctp_data,ntohs(pChunk.chunk_ssn));
 
