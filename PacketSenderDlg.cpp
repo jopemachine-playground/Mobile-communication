@@ -57,7 +57,7 @@ CPacketSenderDlg::CPacketSenderDlg(CWnd* pParent /*=NULL*/)
 	m_LayerMgr.AddLayer( new CSCTPLayer( "SCTP" ) );
 	m_LayerMgr.AddLayer( new CS1APLayer( "S1AP" ) );
 
-	m_LayerMgr.ConnectLayers("NI ( *Link ( *IP ( *S1AP ( *AppDlg ) ) ) )");
+	m_LayerMgr.ConnectLayers("NI ( *Link ( *IP ( *SCTP ( *S1AP ( *AppDlg ) ) ) ) )");
 
 	m_IP = (CIPLayer *)m_LayerMgr.GetLayer("IP");
 	m_Link = (CLinkLayer *)m_LayerMgr.GetLayer("Link");

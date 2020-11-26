@@ -78,7 +78,7 @@ void CSCTPLayer::SetChunkData(int nlength)
 	// CHUNK DATA
 	m_sChunk.chunk_type = 0x00; // DATA (0), INIT (1)
 
-	m_sChunk.chunk_length = ntohs(nlength + _HEADER_SIZE);
+	m_sChunk.chunk_length = ntohs(nlength + SCTP_HEADER_SIZE);
 	m_sChunk.chunk_pid = htonl(0x00000012);
 
 	m_sChunk.chunk_sid = htons(0x0001);
