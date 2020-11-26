@@ -40,11 +40,11 @@ void CSCTPLayer::ResetHeader()
 	m_sHeader.sctp_verif_tag[3] = 0x00;
 
 	memset(m_sHeader.sctp_checksum, '\0', 4);
-	memset(m_sHeader.sctp_data,'\0', SCTP_DATA_SIZE);
+	memset(m_sHeader.sctp_data, '\0', SCTP_DATA_SIZE);
 
 	// CHUNK DATA
 	m_sChunk.chunk_type = 0x00; // DATA (0), INIT (1)
-	m_sChunk.chunk_length = SCTP_HEADER_SIZE; // 4 bytes
+	m_sChunk.chunk_length = SCTP_HEADER_SIZE; // 12 + chunk byte length (4) = 16 bytes
 	m_sChunk.chunk_flags = 0x03;
 	m_sChunk.chunk_tsn = 0x00000000;
 	m_sChunk.chunk_sid = 0x0000;
@@ -78,7 +78,7 @@ void CSCTPLayer::SetChunkData(int nlength)
 	// CHUNK DATA
 	m_sChunk.chunk_type = 0x00; // DATA (0), INIT (1)
 
-	m_sChunk.chunk_length = ntohs(nlength + SCTP_HEADER_SIZE);
+	m_sChunk.chunk_length = ntohs(nlength);
 	m_sChunk.chunk_pid = htonl(0x00000012);
 
 	m_sChunk.chunk_sid = htons(0x0001);

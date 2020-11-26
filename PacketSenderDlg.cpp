@@ -426,7 +426,7 @@ void CPacketSenderDlg::OnCbnSelchangeComboMac()
 	memcpy(ip,(*m_NI->GetIpAddress(MacAddrToHexInt(mac_address))).addrs_i,4);	
 
 	// 화면에 IP 설정
-	ctrlIP.SetAddress(ip[0],ip[1],ip[2],0);
+	ctrlIP.SetAddress(ip[0], ip[1], ip[2], 0);
 
 	// IP Layer에 Source IP 주소 설정
 	m_IP->SetSrcIPAddress(ip);
