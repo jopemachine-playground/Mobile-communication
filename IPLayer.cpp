@@ -75,10 +75,10 @@ void CIPLayer::SetFragOff(u_short fragoff)
 BOOL CIPLayer::Send(u_char* ppayload, int nlength)
 {
 	memcpy( m_sHeader.ip_data, ppayload, nlength ) ;
-	m_sHeader.ip_len = ntohs(nlength+IP_HEADER_SIZE);
+	m_sHeader.ip_len = ntohs(nlength + IP_HEADER_SIZE);
 	
 	BOOL bSuccess = FALSE ;
-	bSuccess = mp_UnderLayer->Send((u_char*)&m_sHeader,IP_HEADER_SIZE + nlength);
+	bSuccess = mp_UnderLayer->Send((u_char*)&m_sHeader, IP_HEADER_SIZE + nlength);
 
 	return bSuccess;
 }
@@ -89,20 +89,16 @@ BOOL CIPLayer::Receive(u_char* ppayload)
 	
 	BOOL bSuccess = FALSE ;
 
-#if 1
 	if(memcmp((char *) pFrame->ip_dst.addrs_i, (char *)m_sHeader.ip_src.addrs_i, 4) == 0 &&
 		memcmp((char *) pFrame->ip_src.addrs_i, (char *)m_sHeader.ip_src.addrs_i, 4) != 0 )
 	{
-#endif
 		// begin: 알맞은 값을 채우시오
 		// * IP의 프로토콜 타입 필터
 		// 1. 프로토콜 타입이 SCTP인 패킷만 걸러낸다.
 		// 2. 걸러진 SCTP타입 패킷을 decapsulation하여, 상위 레이어로 data를 올린다.
 		if(pFrame->ip_proto == IP_PROTO_SCTP)
 			bSuccess = mp_aUpperLayer[0]->Receive((u_char*)pFrame->ip_data);
-		// end
-#if 1
+		// ends
 	}
-#endif
 	return bSuccess ;
 }

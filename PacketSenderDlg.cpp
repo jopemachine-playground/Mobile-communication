@@ -366,14 +366,11 @@ void CPacketSenderDlg::OnBnClickedBtnSend()
 
 void CPacketSenderDlg::OnBnClickedBtnSetting()
 {
-	u_char dstip[4];
-	// 168.188.127.166 a8.bc.7f.a6
-	/*
+	// 168.188.127.52 a8.bc.7f.34
 	u_char dstip[4] = {
-		0xa8, 0xbc, 0x7f, 0xa6 
+		0xa8, 0xbc, 0x7f, 0x34
 	};
-	*/
-
+	
 	ctrlIP.GetAddress(dstip[0], dstip[1], dstip[2], dstip[3]);
 
 	m_IP->SetDstIPAddress(dstip);

@@ -76,7 +76,7 @@
 #define MAX_LAYER_NUMBER		0xff
 #define NI_COUNT_NIC			10
 #define APP_STUDENT_NUM			9
-#define IP_PROTO_SCTP			132
+#define IP_PROTO_SCTP			132 // 0x84
 
 #define ETHER_MAX_SIZE			1514
 #define ETHER_HEADER_SIZE		14

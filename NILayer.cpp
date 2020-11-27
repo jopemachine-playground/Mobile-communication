@@ -70,7 +70,7 @@ void CNILayer::SetAdapterList(LPADAPTER *plist)
 
 	char errbuf[PCAP_ERRBUF_SIZE];
 
-	for (int j = 0; j<NI_COUNT_NIC; j++)
+	for (int j = 0; j < NI_COUNT_NIC; j++)
 	{
 		m_pAdapterList[j] = NULL;
 	}
