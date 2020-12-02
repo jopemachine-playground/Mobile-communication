@@ -78,7 +78,7 @@ void CSCTPLayer::SetChunkData(int nlength)
 	// CHUNK DATA
 	m_sChunk.chunk_type = 0x00; // DATA (0), INIT (1)
 
-	m_sChunk.chunk_length = ntohs(nlength);
+	m_sChunk.chunk_length = ntohs(CHUNK_HEADER_SIZE + CHUNK_DATA_SIZE + nlength);
 	m_sChunk.chunk_pid = htonl(0x00000012);
 
 	m_sChunk.chunk_sid = htons(0x0001);
@@ -108,9 +108,7 @@ BOOL CSCTPLayer::Send(u_char* ppayload, int nlength)
 		break;
 	}
 
-	// begin: 알맞은 값을 채우시오
-	int packet_length = SCTP_HEADER_SIZE + nlength + cLength; /* + [SCTP PACKET TOTAL SIZE] */
-	// end
+	int packet_length = SCTP_HEADER_SIZE + CHUNK_HEADER_SIZE + CHUNK_DATA_SIZE + nlength + cLength;
 
 	BOOL bSuccess = FALSE;
 	bSuccess = mp_UnderLayer->Send((u_char*)&m_sHeader, packet_length);

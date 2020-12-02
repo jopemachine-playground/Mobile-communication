@@ -135,9 +135,7 @@ u_char CS1APLayer::SearchItems(u_char proc, u_char* ppayload)
 		}
 		else
 		{
-			// begin: 알맞은 값을 채우시오
-			i += 8; // 패킷 탐색을 위한 적절한 길이를 작성하시오. (hint: S1AP의 ITEM 포맷을 참고하시오.)
-			// end
+			i += ITEM_HEADER_SIZE + header.length;
 		}
 		if(i >= m_sHeader.s1ap_length)
 			return 0;
