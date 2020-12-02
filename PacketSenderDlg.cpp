@@ -290,14 +290,12 @@ BOOL CPacketSenderDlg::Receive(u_char* ppayload)
 	switch (ppayload[0])
 	{
 		// UE
-	case S1AP_MSG_TYPE_AUTHEN_REQUEST:// 받은 메시지 타입 (두 번째 과제)
+	case S1AP_MSG_TYPE_AUTHEN_REQUEST:
+		// 받은 메시지 타입 (두 번째 과제)
 		length = 57;
-
-		// begin: 알맞은 값을 채우시오
-		memcpy(spayload, "\0", length); // 보낼 메시지 패킷 데이터 (현재 파일 아래 함수 호출)
-		m_S1AP->SetMessageType(0); // 보낼 메시지 타입
-		m_S1AP->SetTheNumberOfItems(0); // 보낼 메시지의 아이템 개수
-		// end
+		m_S1AP->SetMessageType(S1AP_MSG_TYPE_AUTHEN_RESPONSE);
+		m_S1AP->SetTheNumberOfItems(5);
+		memcpy(spayload, authenticationRspItems(), length);
 		break;
 
 		// UE
@@ -486,8 +484,21 @@ u_char* CPacketSenderDlg::initialContextSetupRequestAttachAcceptItems()
 
 u_char* CPacketSenderDlg::authenticationRspItems()
 {
-	u_char temp[64] = {
-		0
+	u_char temp[57] = {
+		// item0 id-MME-UE-S1AP-ID
+		0x00,0x00,0x00,0x03,0x40,0x12,0x86
+
+		// Item1 eNB-UE-S1AP-ID
+		,0x00,0x08,0x00,0x02,0x00,0x00
+
+		// Item2 NAS-PDU
+		,0x00,0x1a,0x00,0x12,0x11,0x17,0x38,0x6f,0x95,0x5b,0x08,0x07,0x53,0x08,0xaa,0x7a,0xdf,0x21,0x9c,0xa2,0x52,0x82
+
+		// Item3 id-EUTRAN-CGI
+		,0x00,0x64,0x40,0x08,0x00,0x54,0xf0,0x60,0x00,0x00,0x10,0xe0
+
+		// Item4 id-TAI
+		,0x00,0x43,0x40,0x06,0x00,0x54,0xf0,0x60,0x01,0xf4
 	};
 
 	return temp;

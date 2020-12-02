@@ -69,7 +69,7 @@ BOOL CS1APLayer::Send(u_char* ppayload, int nlength)
 BOOL CS1APLayer::Receive(u_char* ppayload, int len)
 {
 	u_char result[1];
-	if(len == 4)
+	if (len == 4)
 	{
 		PS1APLayer_HEADER2 pFrame = (PS1APLayer_HEADER2) ppayload ;
 		result[0] = SearchItems(pFrame->s1ap_proc_code, pFrame->s1ap_data);
@@ -113,14 +113,14 @@ u_char CS1APLayer::SearchItems(u_char proc, u_char* ppayload)
 		memcpy((u_char*)&header, &ppayload[i], ITEM_HEADER_SIZE);
 
 		id = ntohs(header.id);
-		if( id == S1AP_ID_NAS_PDU)
+		if (id == S1AP_ID_NAS_PDU)
 		{
 			// length (1)
 			// + security header type & proto discriminator (1)
 			// + msg auth code (4)
 			// + sequence number (1)
 			// + security header type & proto discriminator (1)
-			if(proc == S1AP_PROC_CODE_DOWNLINK_NAS_TRANS)
+			if (proc == S1AP_PROC_CODE_DOWNLINK_NAS_TRANS)
 				i += 6;
 			else
 				i += 12;
@@ -128,7 +128,7 @@ u_char CS1APLayer::SearchItems(u_char proc, u_char* ppayload)
 			ch = ppayload[i]; // NAS EPS MME type
 			return ch;
 		}
-		else if( id == S1AP_ID_E_RAB_TOBE_SETUP_LIST_CTXT_SUREQ)
+		else if (id == S1AP_ID_E_RAB_TOBE_SETUP_LIST_CTXT_SUREQ)
 		{
  			ch = ppayload[i + 33]; // NAS EPS MME type
 			return ch;
