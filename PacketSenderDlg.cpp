@@ -79,7 +79,6 @@ BEGIN_MESSAGE_MAP(CPacketSenderDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BTN_SEND, &CPacketSenderDlg::OnBnClickedBtnSend)
-
 	ON_BN_CLICKED(IDC_BTN_SETTING, &CPacketSenderDlg::OnBnClickedBtnSetting)
 	ON_BN_CLICKED(IDC_BTN_START, &CPacketSenderDlg::OnBnClickedBtnStart)
 	ON_BN_CLICKED(IDC_BTN_STOP, &CPacketSenderDlg::OnBnClickedBtnStop)
@@ -302,23 +301,22 @@ BOOL CPacketSenderDlg::Receive(u_char* ppayload)
 	case S1AP_MSG_TYPE_ATTACH_ACCEPT: // 받은 메시지 타입 (세 번째 과제)
 		length = 32;
 
-		// begin: 알맞은 값을 채우시오
 		memcpy(spayload, "\0", length); // 보낼 메시지 패킷 데이터 (현재 파일 아래 함수 호출)
-		m_S1AP->SetMessageType(0); // 보낼 메시지 타입
-		m_S1AP->SetTheNumberOfItems(0); // 보낼 메시지의 아이템 개수
-		// end
+		m_S1AP->SetMessageType(S1AP_MSG_TYPE_ATTACH_COMPLETE1); // 50 = 0x32
+		m_S1AP->SetTheNumberOfItems(3);
+		memcpy(spayload, initialContextSetupResponseItems(), length);
 
 		Send(spayload, length);
 
 		// Attach Complete
 		length = 53;
 
-		// begin: 알맞은 값을 채우시오
-		memcpy(spayload, "\0", length); // 보낼 메시지 패킷 데이터 (현재 파일 아래 함수 호출)
-		m_S1AP->SetMessageType(0); // 보낼 메시지 타입
-		m_S1AP->SetTheNumberOfItems(0); // 보낼 메시지의 아이템 개수
-		// end
+		memcpy(spayload, "\0", length);
+		m_S1AP->SetMessageType(S1AP_MSG_TYPE_ATTACH_COMPLETE2); // 0x43
+		m_S1AP->SetTheNumberOfItems(5);
+		memcpy(spayload, attachCompleteItems(), length);
 		break;
+
 	default:
 		return FALSE;
 	}
@@ -437,7 +435,8 @@ int CPacketSenderDlg::item_size(ITEM_HEADER item)
 	return 2 + 1 + 1 + item.length;
 }
 
-u_char* CPacketSenderDlg::attachReqItems() // (첫번째 과제)
+// 1번째 과제
+u_char* CPacketSenderDlg::attachReqItems()
 {
 	u_char temp[93] = {
 		// item0 id-eNB-UE-S1AP-ID
@@ -465,6 +464,7 @@ u_char* CPacketSenderDlg::attachReqItems() // (첫번째 과제)
 	return temp;
 }
 
+// MME에서 주는 부분 (우리가 채우는 부분 아님..)
 u_char* CPacketSenderDlg::authenticationReqItems()
 {
 	u_char temp[57] = {
@@ -473,6 +473,7 @@ u_char* CPacketSenderDlg::authenticationReqItems()
 	return temp;
 }
 
+// MME에서 주는 부분 (우리가 채우는 부분 아님..)
 u_char* CPacketSenderDlg::initialContextSetupRequestAttachAcceptItems()
 {
 	u_char temp[229] = {
@@ -482,6 +483,7 @@ u_char* CPacketSenderDlg::initialContextSetupRequestAttachAcceptItems()
 	return temp;
 }
 
+// 2번째 과제
 u_char* CPacketSenderDlg::authenticationRspItems()
 {
 	u_char temp[57] = {
@@ -504,19 +506,42 @@ u_char* CPacketSenderDlg::authenticationRspItems()
 	return temp;
 }
 
+// 3번째 과제
 u_char*	CPacketSenderDlg::initialContextSetupResponseItems()
 {
+	// warning: length should be 32
 	u_char temp[33] = {
-		0
+		// item0, id-MME-UE-S1AP-ID (7)
+		0x00,0x00,0x00,0x03,0x40,0x12,0x86
+
+		// item1, id-eNB-UE-S1-AP-ID (6)
+		,0x00,0x08,0x00,0x02,0x00,0x00
+
+		// item2, id-E-RABSetupListCtxtSURes (Msg type: 0x32) (19)
+		,0x00,0x33,0x40,0x0f,0x00,0x00,0x32,0x40,0x0a,0x0a,0x1f,0x04,0x05,0x01,0x11,0x01,0x00,0x00,0x0a
 	};
 
 	return temp;
 }
 
+// 3번째 과제
 u_char*	CPacketSenderDlg::attachCompleteItems()
 {
 	u_char temp[57] = {
-		0
+		// item0, id-MME-UE-S1AP-ID
+		0x00,0x00,0x00,0x03,0x40,0x12,0x86
+
+		// item1, id-eNB-UE-S1AP-ID
+		,0x00,0x08,0x00,0x02,0x00,0x00
+
+		// item2, id-NAS-PDU (Msg type: 0x43)
+		,0x00,0x1a,0x00,0x0e,0x0d,0x27,0x40,0x73,0x5f,0x51,0x02,0x07,0x43,0x00,0x03,0x52,0x00,0xc2
+
+		// item3, id-EUTRAN-CGI
+		,0x00,0x64,0x40,0x08,0x00,0x54,0xf0,0x60,0x00,0x00,0x10,0xe0
+
+		// item4, id-TAI
+		,0x00,0x43,0x40,0x06,0x00,0x54,0xf0,0x60,0x01,0xf4
 	};
 
 	return temp;

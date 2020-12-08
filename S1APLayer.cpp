@@ -192,8 +192,8 @@ void CS1APLayer::AuthenticationRepMsg(int nlength)
 void CS1APLayer::initialContextSetupResponseItems(int nlength)
 {
 	// begin: 알맞은 값을 채우시오
-	m_sHeader.s1ap_pdu = 0; // a type of PDU
-	m_sHeader.s1ap_proc_code = 0; // procedure code
+	m_sHeader.s1ap_pdu = S1AP_PDU_SUCCESSFUL_OUTCOME; // a type of PDU
+	m_sHeader.s1ap_proc_code = S1AP_PROC_CODE_INITIAL_CONTEXTSETUP; // procedure code
 	// end
 
 	m_sHeader.s1ap_crit = 0x00;
@@ -206,8 +206,8 @@ void CS1APLayer::initialContextSetupResponseItems(int nlength)
 void CS1APLayer::attachCompleteItems(int nlength)
 {
 	// begin: 알맞은 값을 채우시오
-	m_sHeader.s1ap_pdu = 0; // a type of PDU
-	m_sHeader.s1ap_proc_code = 0; // procedure code
+	m_sHeader.s1ap_pdu = S1AP_ID_NAS_PDU; // a type of PDU
+	m_sHeader.s1ap_proc_code = S1AP_PROC_CODE_UPLINK_NAS_TRANS; // procedure code
 	// end
 
 	m_sHeader.s1ap_crit = 0x40;
